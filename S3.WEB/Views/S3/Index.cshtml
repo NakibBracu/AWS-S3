@@ -1,0 +1,127 @@
+﻿@model S3BucketItemListModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+@section Styles{
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/AdminLTE/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminLTE/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminLTE/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.21.0/font/bootstrap-icons.css" rel="stylesheet">
+
+}
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">S3 Table</h3>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <a href="/S3/UploadFileToS3" class="btn btn-outline-primary">Upload-Items-in-S3-Bucket</a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+
+                        <table id="S3" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ItemName</th>
+                                    <th style="width:150px">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>ItemName</th>
+                                    <th style="width:150px">Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <partial name="_ModalPartial" />
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+@section Scripts{
+
+    <!-- DataTables  & Plugins -->
+    <script src="~/AdminLTE/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/AdminLTE/plugins/jszip/jszip.min.js"></script>
+    <script src="~/AdminLTE/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/AdminLTE/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/AdminLTE/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/AdminLTE/js/adminlte.min.js"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/AdminLTE/js/demo.js"></script>
+    <!-- Page specific script -->
+    <script>
+        $(function () {
+            $("#S3").DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "/S3/GetS3BucketItems"
+                },
+                "columnDefs": [
+                    {
+                        "orderable": false,
+                        "targets": 1, //Id-> column works
+                        "render": function (data, type, row) {
+                            return `<button type="submit" class="btn btn-success btn-sm download-btn" data-id='${data}' value='${data}'>
+                                                    <i class="fas fa-download"></i> Download
+                                </button>
+                            <button type="submit" class="btn btn-danger btn-sm show-bs-modal" data-id='${data}' value='${data}'>
+                                                                        <i class="fas fa-trash">
+                                                                        </i>
+                                                                        Delete
+                                                                    </button>`;
+                        }
+                    }
+                ]
+            });
+            $('#S3').on('click', '.show-bs-modal', function (event) {
+                var id = $(this).data("id");
+                var modal = $("#modal-default");
+                modal.find('.modal-body p').text('Are you sure you want to delete this record?');
+                $("#deleteId").val(id);
+                $("#deleteForm").attr("action", "/S3/delete");
+                modal.modal('show');
+            });
+
+            $("#deleteButton").click(function () {
+                $("#deleteForm").submit();
+            });
+
+            $('#S3').on('click', '.download-btn', function (event) {
+                var id = $(this).data("id");
+                // Assuming that the download action is "DownloadSpecificFile"
+                window.location.href = "/S3/DownloadSpecificFile?id=" + id;
+            });
+
+        });
+    </script>
+    }
+

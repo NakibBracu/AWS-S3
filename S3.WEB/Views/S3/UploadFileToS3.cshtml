@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "UploadFileToS3";
+}
+
+<h1>UploadFileToS3</h1>
+
+@using (Html.BeginForm("UploadFileToS3", "S3", FormMethod.Post, new { enctype = "multipart/form-data", id = "uploadForm" }))
+{
+    <div class="upload-box">
+        <input type="file" name="files" id="fileInput" multiple accept="image/*, video/*" />
+        <table id="fileTable">
+            <thead>
+                <tr>
+                    <th>File Number</th>
+                    <th>File Name</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <input type="submit" value="Upload" />
+    </div>
+}
+
+<style>
+    #fileTable {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #fileTable th, #fileTable td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #fileTable th {
+            background-color: #f2f2f2;
+        }
+</style>
+
+<script>
+    // JavaScript to handle file selection and preview
+    const fileInput = document.getElementById('fileInput');
+    const fileTableBody = document.querySelector('#fileTable tbody');
+
+    fileInput.addEventListener('change', (event) => {
+        fileTableBody.innerHTML = '';
+        const files = event.target.files;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const row = fileTableBody.insertRow();
+
+            // File Number
+            const cellNumber = row.insertCell(0);
+            cellNumber.textContent = i + 1;
+
+            // File Name
+            const cellName = row.insertCell(1);
+            cellName.textContent = file.name;
+        }
+    });
+</script>
